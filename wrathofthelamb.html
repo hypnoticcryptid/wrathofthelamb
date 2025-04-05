@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Binding of Isaac Demo</title>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100v
+h;
+            background-color: #111; /* Dark background */
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px; /* Adjust as needed */
+            height: auto; /* Maintain aspect ratio */
+            aspect-ratio: 8 / 6;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #game-embed {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        #fullscreen-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        #fullscreen-button:hover {
+            background-color: #367c39; /* Darker green */
+        }
+        #fullscreen-button:active {
+            background-color: #2b5e2e;
+        }
+
+        @media (max-width: 800px) {
+            #game-container {
+                max-width: 100%;
+            }
+            #fullscreen-button{
+               margin-top: 10px;
+               padding: 8px 16px;
+               font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body> 
+  <a href="/">Back</a>
+    <div id="game-container">
+        <embed id="game-embed" src="https://github.com/hypnoticcryptid/wrathofthelamb/blob/main/The%20Binding%20of%20Isaac%20(1).swf" type="application/x-shockwave-flash"></embed>
+    </div>
+    <button id="fullscreen-button">Play in Fullscreen</button>
+
+    <script>
+        const fullscreenButton = document.getElementById('fullscreen-button');
+        const gameEmbed = document.getElementById('game-embed');
+
+        fullscreenButton.addEventListener('click', () => {
+            // Create a new window (about:blank)
+            const newWindow = window.open('about:blank', '_blank');
+            if (!newWindow) {
+                alert("Please allow pop-ups for this site to enable fullscreen.");
+                return;
+            }
+
+            // Function to run inside the new window
+            const runInNewWindow = () => {
+                const newDocument = newWindow.document;
+                newDocument.body.style.margin = '0';
+                newDocument.body.style.overflow = 'hidden';
+                newDocument.title = "The Binding of Isaac Demo (Fullscreen)";
+
+                const container = newDocument.createElement('div');
+                container.style.width = '100vw';
+                container.style.height = '100vh';
+                container.style.display = 'flex';
+                container.style.alignItems = 'center';
+                container.style.justifyContent = 'center';
+                newDocument.body.appendChild(container);
+
+                const embed = newDocument.createElement('embed');
+                embed.src = 'https://github.com/hypnoticcryptid/wrathofthelamb/blob/main/The%20Binding%20of%20Isaac%20(1).swf';
+                embed.type = 'application/x-shockwave-flash';
+                embed.style.width = '100%';
+                embed.style.height = '100%';
+                embed.style.display = 'block';
+                container.appendChild(embed);
+
+                 // Apply Ruffle to the new embed element.
+                window.RufflePlayer.createPlayer({
+                    element: embed,
+                    url:  'https://github.com/hypnoticcryptid/wrathofthelamb/blob/main/The%20Binding%20of%20Isaac%20(1).swf',
+                    warnOnUnsupportedContent: false,
+                    autoplay: 'on',
+                    wmode: 'window', // Important for proper fullscreen behavior in some browsers
+                });
+            };
+
+            // inject script
+            const script = newWindow.document.createElement('script');
+            script.src = 'https://unpkg.com/@ruffle-rs/ruffle';
+            script.onload = runInNewWindow; // Run after Ruffle is loaded
+            newWindow.document.head.appendChild(script);
+
+           // If Ruffle is already loaded (unlikely, but possible), run immediately
+           if (window.RufflePlayer) {
+              runInNewWindow();
+           }
+
+        });
+    </script>
+</body>
+</html>
